@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://seahub.github.io/LoomNest/sitemap.xml

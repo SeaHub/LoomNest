@@ -1,0 +1,9 @@
+{
+  "name": "LoomNest — Selected Works",
+  "short_name": "LoomNest",
+  "start_url": ".",
+  "display": "standalone",
+  "background_color": "#ececea",
+  "theme_color": "#ececea",
+  "description": "LoomNest 的数字作品档案。"
+}
