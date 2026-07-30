@@ -283,7 +283,6 @@ onBeforeUnmount(() => {
     </a>
     <nav class="site-nav" aria-label="主导航">
       <a class="is-current" href="#works">Works</a>
-      <a href="#about">About</a>
       <a href="#notes">Notes</a>
     </nav>
     <button class="theme-toggle glass-control" type="button" data-theme-toggle :aria-label="themeButtonAriaLabel" @click="cycleTheme">
@@ -295,18 +294,6 @@ onBeforeUnmount(() => {
   <p v-if="dataError" class="data-notice" role="status">{{ dataError }}</p>
 
   <main class="page-grid" @keydown="handleKeydown">
-    <aside class="intro-column" id="about">
-      <p class="eyebrow reveal reveal--one">LOOMNEST / 作品档案</p>
-      <h1 class="reveal reveal--two">把复杂的世界，做成可使用的东西。</h1>
-      <p class="intro-copy reveal reveal--three">LoomNest 是一个持续生长的数字创作档案，收录网站、小程序、移动应用，以及还在路上的下一件作品。</p>
-      <p class="intro-copy intro-copy--en reveal reveal--four">A living index of websites, mini programs, mobile apps, and the things still taking shape.</p>
-      <dl class="meta-list reveal reveal--five">
-        <div><dt>BASE</dt><dd>Hangzhou, China</dd></div>
-        <div><dt>FOCUS</dt><dd>Structure · Interaction · Detail</dd></div>
-        <div><dt>UPDATED</dt><dd>2026—07—30</dd></div>
-      </dl>
-    </aside>
-
     <section class="works-column" id="works" aria-labelledby="works-heading">
       <div class="section-heading">
         <div>

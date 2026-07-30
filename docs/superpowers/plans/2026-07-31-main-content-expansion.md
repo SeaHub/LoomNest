@@ -6,7 +6,7 @@
 
 **Architecture:** Keep the current Vue single-page structure and all work-list behavior. Make `works-column` the only child of the main grid, change that grid to one full-width column, and remove CSS used exclusively by the deleted introduction.
 
-**Tech Stack:** Vue 3, Vite 8, CSS Grid, Node.js assertion tests
+**Tech Stack:** Vue 3, Vite 8, CSS Grid, Node.js assertion tests, Chromium layout checks
 
 ## Global Constraints
 
@@ -21,7 +21,6 @@
 ### Task 1: Expand the works area and remove the introduction
 
 **Files:**
-- Modify: `scripts/test-vue-app.mjs`
 - Modify: `src/App.vue`
 - Modify: `src/styles.css`
 
@@ -29,32 +28,24 @@
 - Consumes: the existing `App.vue` template contract and CSS class names.
 - Produces: a template with `works-column` as the sole `page-grid` child and a single-column `.page-grid` layout at every viewport width.
 
-- [ ] **Step 1: Write the failing structure test**
+- [x] **Step 1: Record the failing rendered-layout test**
 
-Add these source-contract assertions after the existing imports and before the helper tests in `scripts/test-vue-app.mjs`:
+Start the local server:
 
-```js
-const appSource = fs.readFileSync(new URL('../src/App.vue', import.meta.url), 'utf8');
-const stylesSource = fs.readFileSync(new URL('../src/styles.css', import.meta.url), 'utf8');
-
-assert.doesNotMatch(appSource, /class="intro-column"/);
-assert.doesNotMatch(appSource, /href="#about"/);
-assert.doesNotMatch(appSource, /把复杂的世界/);
-assert.match(appSource, /class="works-column" id="works"/);
-assert.match(appSource, /href="#works">Works<\/a>/);
-assert.match(appSource, /href="#notes">Notes<\/a>/);
-assert.match(stylesSource, /\.page-grid\s*\{[^}]*grid-template-columns:\s*minmax\(0,\s*1fr\)/s);
-assert.doesNotMatch(stylesSource, /\.intro-column\b/);
-assert.doesNotMatch(stylesSource, /\.meta-list\b/);
+```bash
+npm run dev -- --host 127.0.0.1
 ```
 
-- [ ] **Step 2: Run the test to verify it fails**
+At a desktop viewport around `1712 × 1025`, evaluate the rendered DOM and record:
 
-Run: `npm test`
+- whether `.intro-column` exists;
+- whether `a[href="#about"]` exists;
+- the bounding widths of `.page-grid` and `.works-column`;
+- the computed `grid-template-columns` value.
 
-Expected: FAIL on `class="intro-column"`, `href="#about"`, or the current two-column `.page-grid` declaration.
+Expected before implementation: the introduction and About link exist, the works width is smaller than the grid width, and the grid reports two columns.
 
-- [ ] **Step 3: Remove the introduction and About entry**
+- [x] **Step 2: Remove the introduction and About entry**
 
 In `src/App.vue`, keep only the valid navigation links:
 
@@ -67,7 +58,7 @@ In `src/App.vue`, keep only the valid navigation links:
 
 Delete the complete `<aside class="intro-column" id="about">…</aside>` block. Keep the existing `<section class="works-column" id="works" …>` unchanged as the only child inside `<main class="page-grid">`.
 
-- [ ] **Step 4: Convert the main grid to one column and remove dead styles**
+- [x] **Step 3: Convert the main grid to one column and remove dead styles**
 
 In `src/styles.css`, replace the desktop grid declaration with:
 
@@ -103,7 +94,7 @@ Delete rules used only by the removed introduction:
 
 Remove `meta-list dt` from the shared monospace selector. In the `max-width: 900px` and `max-width: 680px` media queries, delete the now-redundant `.page-grid` column/gap override and all `.intro-column`, `.intro-column h1`, and `.meta-list` declarations. Preserve existing responsive width, padding, work-row, detail, footer, and loading-row rules.
 
-- [ ] **Step 5: Run automated verification**
+- [x] **Step 4: Run automated verification**
 
 Run: `npm test`
 
@@ -113,13 +104,7 @@ Run: `npm run build`
 
 Expected: Vite exits with code 0 and writes the production bundle to `dist/`.
 
-- [ ] **Step 6: Verify the rendered layout**
-
-Start the local server:
-
-```bash
-npm run dev -- --host 127.0.0.1
-```
+- [x] **Step 5: Verify the rendered layout**
 
 At a desktop viewport around `1712 × 1025`, verify:
 
@@ -135,9 +120,9 @@ At a mobile viewport around `390 × 844`, verify:
 - rows and expanded details do not overflow horizontally;
 - the header navigation contains only `Works` and `Notes`.
 
-- [ ] **Step 7: Commit the implementation**
+- [ ] **Step 6: Commit the implementation**
 
 ```bash
-git add scripts/test-vue-app.mjs src/App.vue src/styles.css
+git add docs/superpowers/plans/2026-07-31-main-content-expansion.md src/App.vue src/styles.css
 git commit -m "feat: expand works content area"
 ```
