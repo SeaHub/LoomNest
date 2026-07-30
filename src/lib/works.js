@@ -47,3 +47,8 @@ export function isSafeExternalUrl(value) {
     return false;
   }
 }
+
+export function getWorksUrl(baseUrl, cacheKey) {
+  const normalizedBase = String(baseUrl || '/').endsWith('/') ? String(baseUrl || '/') : `${baseUrl}/`;
+  return `${normalizedBase}works.json${cacheKey ? `?v=${encodeURIComponent(cacheKey)}` : ''}`;
+}

@@ -3,6 +3,7 @@ import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import {
   filterWorks,
   getAccessKind,
+  getWorksUrl,
   isSafeExternalUrl,
   normalizeWorks,
   resolveTheme,
@@ -178,7 +179,7 @@ async function loadWorks() {
   dataError.value = '';
 
   try {
-    const response = await fetch(`${import.meta.env.BASE_URL}works.json`);
+    const response = await fetch(getWorksUrl(import.meta.env.BASE_URL, Date.now()), { cache: 'no-store' });
     if (!response.ok) throw new Error(`作品配置加载失败：${response.status}`);
 
     const loaded = normalizeWorks(await response.json());

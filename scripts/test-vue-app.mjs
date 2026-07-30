@@ -4,6 +4,7 @@ import path from 'node:path';
 import {
   filterWorks,
   getAccessKind,
+  getWorksUrl,
   isSafeExternalUrl,
   normalizeWorks,
   resolveTheme,
@@ -27,6 +28,7 @@ assert.equal(resolveTheme('light', true), 'light');
 assert.equal(isSafeExternalUrl('https://example.com'), true);
 assert.equal(isSafeExternalUrl('javascript:alert(1)'), false);
 assert.equal(isSafeExternalUrl(''), false);
+assert.equal(getWorksUrl('/LoomNest/', '3d937da'), '/LoomNest/works.json?v=3d937da');
 
 const publicWorks = JSON.parse(fs.readFileSync(new URL('../public/works.json', import.meta.url), 'utf8'));
 for (const work of publicWorks) {
