@@ -1,4 +1,6 @@
 import assert from 'node:assert/strict';
+import fs from 'node:fs';
+import path from 'node:path';
 import {
   filterWorks,
   getAccessKind,
@@ -25,5 +27,12 @@ assert.equal(resolveTheme('light', true), 'light');
 assert.equal(isSafeExternalUrl('https://example.com'), true);
 assert.equal(isSafeExternalUrl('javascript:alert(1)'), false);
 assert.equal(isSafeExternalUrl(''), false);
+
+const publicWorks = JSON.parse(fs.readFileSync(new URL('../public/works.json', import.meta.url), 'utf8'));
+for (const work of publicWorks) {
+  const extension = path.extname(work.image).toLowerCase();
+  assert.ok(['.jpg', '.jpeg', '.webp'].includes(extension), `${work.id} should use a compressed preview image`);
+  assert.ok(fs.existsSync(path.resolve('public', work.image)), `${work.id} preview image should exist`);
+}
 
 console.log('vue app helpers: ok');
