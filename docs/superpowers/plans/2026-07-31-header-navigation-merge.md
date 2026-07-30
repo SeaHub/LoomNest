@@ -248,7 +248,7 @@ Expected:
 - Vite production build exits with status 0
 - `git diff --check` exits with no output
 
-- [ ] **Step 7: Commit the functional change**
+- [x] **Step 7: Commit the functional change**
 
 ```bash
 git add docs/superpowers/plans/2026-07-31-header-navigation-merge.md src/App.vue src/styles.css
@@ -345,7 +345,7 @@ final result: passed
 
 If a P0, P1, or P2 issue is found, list the concrete issue instead of declaring pass, fix it in `src/App.vue` or `src/styles.css`, repeat Steps 2–4, and only finish when the report says `final result: passed`.
 
-- [ ] **Step 5: Re-run final verification**
+- [x] **Step 5: Re-run final verification**
 
 Run:
 
@@ -357,7 +357,7 @@ git diff --check
 
 Expected: tests pass, production build succeeds, and no whitespace errors are reported.
 
-- [ ] **Step 6: Commit QA evidence and any corrective changes**
+- [x] **Step 6: Commit QA evidence and any corrective changes**
 
 ```bash
 git add design-qa.md implementation-header-merge-1564.png implementation-header-merge-mobile.png src/App.vue src/styles.css
