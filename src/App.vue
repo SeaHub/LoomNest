@@ -8,6 +8,12 @@ import {
   normalizeWorks,
   resolveTheme,
 } from './lib/works.js';
+import {
+  animateMeasuredHeight,
+  cancelMeasuredHeight,
+  createFrameThrottler,
+  shouldScrollDetail,
+} from './lib/motion.js';
 
 const filters = [
   { value: 'all', label: '全部' },
@@ -74,6 +80,7 @@ const reducedMotion = ref(false);
 
 let themeMedia;
 let motionMedia;
+let glassPointerUpdater;
 
 const visibleWorks = computed(() => filterWorks(works.value, activeFilter.value));
 const themeResolved = computed(() => resolveTheme(themeMode.value, systemDark.value));
@@ -135,12 +142,6 @@ function handleFilter(filter) {
 
 function handleRowToggle(work) {
   openWorkId.value = isOpen(work) ? null : work.id;
-
-  if (openWorkId.value && !reducedMotion.value) {
-    nextTick(() => {
-      document.querySelector(`#work-detail-${CSS.escape(work.id)}`)?.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-    });
-  }
 }
 
 function handleKeydown(event) {
@@ -151,15 +152,59 @@ function handleKeydown(event) {
 }
 
 function updateGlassPointer(event) {
-  const element = event.currentTarget;
-  const rect = element.getBoundingClientRect();
-  element.style.setProperty('--pointer-x', `${event.clientX - rect.left}px`);
-  element.style.setProperty('--pointer-y', `${event.clientY - rect.top}px`);
+  glassPointerUpdater?.push({
+    element: event.currentTarget,
+    clientX: event.clientX,
+    clientY: event.clientY,
+  });
 }
 
 function clearGlassPointer(event) {
+  glassPointerUpdater?.cancel();
   event.currentTarget.style.removeProperty('--pointer-x');
   event.currentTarget.style.removeProperty('--pointer-y');
+}
+
+function handleDetailBeforeEnter(element) {
+  element.style.height = '0px';
+  element.dataset.motion = 'entering';
+}
+
+function handleDetailEnter(element, done) {
+  animateMeasuredHeight(element, {
+    opening: true,
+    reducedMotion: reducedMotion.value,
+    done: () => {
+      element.dataset.motion = 'open';
+      done();
+    },
+  });
+}
+
+function handleDetailLeave(element, done) {
+  element.dataset.motion = 'leaving';
+  animateMeasuredHeight(element, {
+    opening: false,
+    reducedMotion: reducedMotion.value,
+    done,
+  });
+}
+
+function handleDetailCancelled(element) {
+  cancelMeasuredHeight(element);
+  element.removeAttribute('data-motion');
+}
+
+function handleDetailAfterEnter(element) {
+  if (reducedMotion.value) return;
+
+  const detail = element.querySelector('.work-detail');
+  if (!detail) return;
+
+  const rect = detail.getBoundingClientRect();
+  if (shouldScrollDetail(rect, { height: window.innerHeight })) {
+    detail.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  }
 }
 
 function safeUrl(value) {
@@ -205,6 +250,12 @@ function handleReducedMotionChange(event) {
 watch([themeMode, systemDark], applyTheme);
 
 onMounted(() => {
+  glassPointerUpdater = createFrameThrottler(({ element, clientX, clientY }) => {
+    if (!element?.isConnected) return;
+    const rect = element.getBoundingClientRect();
+    element.style.setProperty('--pointer-x', `${clientX - rect.left}px`);
+    element.style.setProperty('--pointer-y', `${clientY - rect.top}px`);
+  });
   themeMode.value = readTheme();
   themeMedia = window.matchMedia?.('(prefers-color-scheme: dark)');
   motionMedia = window.matchMedia?.('(prefers-reduced-motion: reduce)');
@@ -217,6 +268,7 @@ onMounted(() => {
 });
 
 onBeforeUnmount(() => {
+  glassPointerUpdater?.cancel();
   themeMedia?.removeEventListener?.('change', handleSystemThemeChange);
   motionMedia?.removeEventListener?.('change', handleReducedMotionChange);
 });
@@ -315,41 +367,53 @@ onBeforeUnmount(() => {
             <span class="row-toggle" aria-hidden="true">{{ isOpen(work) ? '−' : '+' }}</span>
           </button>
 
-          <Transition name="detail">
+          <Transition
+            :css="false"
+            @before-enter="handleDetailBeforeEnter"
+            @enter="handleDetailEnter"
+            @leave="handleDetailLeave"
+            @enter-cancelled="handleDetailCancelled"
+            @leave-cancelled="handleDetailCancelled"
+            @after-enter="handleDetailAfterEnter"
+          >
             <div
               v-if="isOpen(work)"
-              :id="`work-detail-${work.id}`"
-              class="work-detail glass-surface"
-              role="region"
-              :aria-label="`${work.title} 详情`"
-              @pointermove="updateGlassPointer"
-              @pointerleave="clearGlassPointer"
+              class="work-detail-reveal"
             >
-              <div class="detail-copy">
-                <span class="detail-label">OVERVIEW</span>
-                <p>{{ work.summary || '一件持续生长中的数字作品。' }}</p>
-                <span class="detail-label">ROLE</span>
-                <p>{{ roleLabel(work) }}</p>
-              </div>
-              <div class="detail-access">
-                <span class="detail-label">ACCESS</span>
-                <div class="access-actions">
-                  <template v-if="getAccessKind(work) === 'future'">
-                    <span class="access-status access-status--soon">Coming Soon</span>
-                  </template>
-                  <template v-else-if="getAccessKind(work) === 'mini-program'">
-                    <img v-if="work.access.qrImage" class="qr-image" :src="work.access.qrImage" :alt="work.access.qrAlt || `${work.title}二维码`" loading="lazy" />
-                    <span class="access-caption">{{ work.access.qrImage ? '二维码 · 微信扫码体验' : '二维码待补充' }}</span>
-                  </template>
-                  <template v-else-if="getAccessKind(work) === 'mobile'">
-                    <a v-if="safeUrl(work.access.appStore)" class="access-link" :href="safeUrl(work.access.appStore)" target="_blank" rel="noreferrer" :aria-label="`App Store：${work.title}`">App Store <span aria-hidden="true">↗</span></a>
-                    <a v-if="safeUrl(work.access.googlePlay)" class="access-link" :href="safeUrl(work.access.googlePlay)" target="_blank" rel="noreferrer" :aria-label="`Google Play：${work.title}`">Google Play <span aria-hidden="true">↗</span></a>
-                    <span v-if="!safeUrl(work.access.appStore) && !safeUrl(work.access.googlePlay)" class="access-status">下载链接待补充</span>
-                  </template>
-                  <template v-else>
-                    <a v-if="safeUrl(work.access.url)" class="access-link" :href="safeUrl(work.access.url)" target="_blank" rel="noreferrer" :aria-label="`访问网站：${work.title}`">访问网站 <span aria-hidden="true">↗</span></a>
-                    <span v-else class="access-status">访问链接待补充</span>
-                  </template>
+              <div
+                :id="`work-detail-${work.id}`"
+                class="work-detail glass-surface"
+                role="region"
+                :aria-label="`${work.title} 详情`"
+                @pointermove="updateGlassPointer"
+                @pointerleave="clearGlassPointer"
+              >
+                <div class="detail-copy">
+                  <span class="detail-label">OVERVIEW</span>
+                  <p>{{ work.summary || '一件持续生长中的数字作品。' }}</p>
+                  <span class="detail-label">ROLE</span>
+                  <p>{{ roleLabel(work) }}</p>
+                </div>
+                <div class="detail-access">
+                  <span class="detail-label">ACCESS</span>
+                  <div class="access-actions">
+                    <template v-if="getAccessKind(work) === 'future'">
+                      <span class="access-status access-status--soon">Coming Soon</span>
+                    </template>
+                    <template v-else-if="getAccessKind(work) === 'mini-program'">
+                      <img v-if="work.access.qrImage" class="qr-image" :src="work.access.qrImage" :alt="work.access.qrAlt || `${work.title}二维码`" loading="lazy" />
+                      <span class="access-caption">{{ work.access.qrImage ? '二维码 · 微信扫码体验' : '二维码待补充' }}</span>
+                    </template>
+                    <template v-else-if="getAccessKind(work) === 'mobile'">
+                      <a v-if="safeUrl(work.access.appStore)" class="access-link" :href="safeUrl(work.access.appStore)" target="_blank" rel="noreferrer" :aria-label="`App Store：${work.title}`">App Store <span aria-hidden="true">↗</span></a>
+                      <a v-if="safeUrl(work.access.googlePlay)" class="access-link" :href="safeUrl(work.access.googlePlay)" target="_blank" rel="noreferrer" :aria-label="`Google Play：${work.title}`">Google Play <span aria-hidden="true">↗</span></a>
+                      <span v-if="!safeUrl(work.access.appStore) && !safeUrl(work.access.googlePlay)" class="access-status">下载链接待补充</span>
+                    </template>
+                    <template v-else>
+                      <a v-if="safeUrl(work.access.url)" class="access-link" :href="safeUrl(work.access.url)" target="_blank" rel="noreferrer" :aria-label="`访问网站：${work.title}`">访问网站 <span aria-hidden="true">↗</span></a>
+                      <span v-else class="access-status">访问链接待补充</span>
+                    </template>
+                  </div>
                 </div>
               </div>
             </div>

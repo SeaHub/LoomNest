@@ -53,7 +53,7 @@ body {
     radial-gradient(circle at 92% 10%, rgba(241, 91, 58, 0.12), transparent 24rem),
     linear-gradient(135deg, var(--page), var(--page-deep));
   line-height: 1.5;
-  transition: background-color 380ms ease, color 380ms ease;
+  transition: background-color 220ms ease, color 220ms ease;
 }
 
 body::before {
@@ -94,7 +94,7 @@ button { font: inherit; }
   border-radius: 999px;
   box-shadow: var(--shadow);
   transform: translateY(-150%);
-  transition: transform 220ms ease;
+  transition: transform 180ms ease;
 }
 
 .skip-link:focus { transform: translateY(0); }
@@ -142,7 +142,7 @@ button { font: inherit; }
   color: var(--ink-soft);
   font-size: 0.79rem;
   text-decoration: none;
-  transition: color 220ms ease;
+  transition: color 160ms ease;
 }
 
 .site-nav a:hover,
@@ -165,6 +165,7 @@ button { font: inherit; }
   --pointer-y: 50%;
   position: relative;
   isolation: isolate;
+  overflow: hidden;
   border: 1px solid var(--line);
   background: linear-gradient(145deg, var(--glass-shine), var(--glass));
   box-shadow: inset 0 1px 0 var(--glass-shine), var(--shadow);
@@ -175,13 +176,18 @@ button { font: inherit; }
 .glass-surface::before,
 .glass-control::before {
   position: absolute;
-  inset: 0;
+  top: 0;
+  left: 0;
+  width: 280px;
+  height: 280px;
   z-index: -1;
   pointer-events: none;
   content: "";
-  background: radial-gradient(circle at var(--pointer-x) var(--pointer-y), rgba(255, 255, 255, 0.42), transparent 31%);
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.42), transparent 68%);
   opacity: 0.46;
-  transition: opacity 300ms ease;
+  transform: translate3d(calc(var(--pointer-x) - 50%), calc(var(--pointer-y) - 50%), 0);
+  transition: opacity 180ms ease;
+  will-change: transform;
 }
 
 .glass-surface:hover::before,
@@ -209,7 +215,7 @@ button { font: inherit; }
   border-radius: 999px;
   font-size: 0.72rem;
   letter-spacing: 0.01em;
-  transition: border-color 220ms ease, transform 220ms ease;
+  transition: border-color 180ms ease, transform 180ms ease;
 }
 
 .theme-toggle:hover { border-color: var(--orange); transform: translateY(-1px); }
@@ -291,7 +297,7 @@ button { font: inherit; }
   cursor: pointer;
   font-size: 0.74rem;
   white-space: nowrap;
-  transition: color 220ms ease, background 220ms ease, transform 220ms ease;
+  transition: color 180ms ease, background 180ms ease, transform 180ms ease;
 }
 
 .filter-button span { color: var(--ink-faint); font-family: "SFMono-Regular", Consolas, monospace; font-size: 0.64rem; }
@@ -313,7 +319,7 @@ button { font: inherit; }
 .column-labels span:nth-child(4) { grid-column: 5; }
 
 .works-list { border-bottom: 1px solid var(--line-strong); }
-.filter-swap { animation: filter-swap 420ms cubic-bezier(0.22, 1, 0.36, 1) both; }
+.filter-swap { animation: filter-swap 220ms cubic-bezier(0.22, 1, 0.36, 1) both; }
 .work-entry { border-bottom: 1px solid var(--line); scroll-margin-top: 120px; }
 .work-entry:last-child { border-bottom: 0; }
 
@@ -329,7 +335,7 @@ button { font: inherit; }
   background: transparent;
   border: 0;
   cursor: pointer;
-  transition: background 240ms ease, transform 240ms ease, box-shadow 240ms ease;
+  transition: background 180ms ease, transform 160ms ease, box-shadow 180ms ease;
 }
 
 .work-row:hover { background: rgba(255, 255, 255, 0.08); }
@@ -344,7 +350,7 @@ button { font: inherit; }
   object-fit: cover;
   border-radius: 12px;
   box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.18), 0 9px 22px rgba(41, 47, 56, 0.13);
-  transition: transform 420ms cubic-bezier(0.22, 1, 0.36, 1), filter 420ms ease;
+  transition: transform 220ms cubic-bezier(0.22, 1, 0.36, 1), filter 180ms ease;
 }
 
 .work-row:hover .work-thumb { transform: scale(1.035); filter: saturate(1.08); }
@@ -354,23 +360,40 @@ button { font: inherit; }
 .work-title-en { overflow: hidden; color: var(--ink-soft); font-family: "SFMono-Regular", Consolas, monospace; font-size: 0.69rem; text-overflow: ellipsis; white-space: nowrap; }
 .work-year { color: var(--ink-soft); font-family: "SFMono-Regular", Consolas, monospace; font-size: 0.72rem; }
 .work-access-preview { color: var(--orange); font-size: 0.72rem; white-space: nowrap; }
-.row-toggle { color: var(--ink-soft); font-size: 1.25rem; font-weight: 300; text-align: center; transition: color 220ms ease, transform 300ms ease; }
+.row-toggle { color: var(--ink-soft); font-size: 1.25rem; font-weight: 300; text-align: center; transition: color 160ms ease, transform 200ms ease; }
 .work-entry.is-open .row-toggle { color: var(--orange); transform: rotate(180deg); }
+
+.work-detail-reveal {
+  margin: 0 16px 0 78px;
+  padding-bottom: 16px;
+  overflow: clip;
+  contain: paint;
+}
 
 .work-detail {
   display: grid;
   grid-template-columns: minmax(0, 1fr) minmax(200px, 0.72fr);
   gap: 24px;
-  margin: 0 16px 16px 78px;
+  margin: 0;
   padding: 22px;
   border-radius: var(--radius);
+}
+
+.work-detail-reveal[data-motion="entering"] .detail-copy,
+.work-detail-reveal[data-motion="entering"] .detail-access {
+  animation: detail-content-in 180ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.work-detail-reveal[data-motion="leaving"] .detail-copy,
+.work-detail-reveal[data-motion="leaving"] .detail-access {
+  animation: detail-content-out 140ms ease both;
 }
 
 .detail-copy { display: grid; gap: 8px; align-content: start; }
 .detail-copy p { max-width: 45ch; margin: 0 0 13px; color: var(--ink-soft); font-size: 0.86rem; }
 .detail-access { display: grid; gap: 14px; align-content: start; padding-left: 24px; border-left: 1px solid var(--line); }
 .access-actions { display: flex; flex-wrap: wrap; gap: 9px; align-items: center; }
-.access-link { display: inline-flex; gap: 7px; align-items: center; padding: 9px 11px; color: var(--ink); border: 1px solid var(--line-strong); border-radius: 999px; font-size: 0.74rem; text-decoration: none; transition: color 220ms ease, border-color 220ms ease, transform 220ms ease, background 220ms ease; }
+.access-link { display: inline-flex; gap: 7px; align-items: center; padding: 9px 11px; color: var(--ink); border: 1px solid var(--line-strong); border-radius: 999px; font-size: 0.74rem; text-decoration: none; transition: color 180ms ease, border-color 180ms ease, transform 180ms ease, background 180ms ease; }
 .access-link:hover { color: var(--orange); background: var(--glass-strong); border-color: var(--orange); transform: translateY(-1px); }
 .access-status { color: var(--ink-faint); font-size: 0.76rem; }
 .access-status--soon { color: var(--blue); font-family: "SFMono-Regular", Consolas, monospace; }
@@ -395,14 +418,19 @@ button { font: inherit; }
 .reveal--four { animation-delay: 310ms; }
 .reveal--five { animation-delay: 380ms; }
 
-.detail-enter-active,
-.detail-leave-active { max-height: 420px; overflow: hidden; transition: max-height 420ms cubic-bezier(0.22, 1, 0.36, 1), opacity 300ms ease, transform 420ms cubic-bezier(0.22, 1, 0.36, 1); }
-.detail-enter-from,
-.detail-leave-to { max-height: 0; opacity: 0; transform: translateY(-8px) scale(0.985); }
-
 @keyframes rise-in {
   from { opacity: 0; transform: translateY(15px); }
   to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes detail-content-in {
+  from { opacity: 0; transform: translate3d(0, -4px, 0); }
+  to { opacity: 1; transform: translate3d(0, 0, 0); }
+}
+
+@keyframes detail-content-out {
+  from { opacity: 1; transform: translate3d(0, 0, 0); }
+  to { opacity: 0; transform: translate3d(0, -3px, 0); }
 }
 
 @keyframes shimmer {
@@ -444,7 +472,8 @@ button { font: inherit; }
   .work-row { grid-template-columns: 34px minmax(92px, 0.62fr) minmax(0, 1fr) 22px; gap: 12px; padding: 14px 8px; }
   .work-year, .work-access-preview { display: none; }
   .work-meta strong { font-size: 1rem; }
-  .work-detail { grid-template-columns: 1fr; margin-left: 8px; margin-right: 8px; padding: 18px; }
+  .work-detail-reveal { margin-right: 8px; margin-left: 8px; }
+  .work-detail { grid-template-columns: 1fr; padding: 18px; }
   .detail-access { padding-top: 16px; padding-left: 0; border-top: 1px solid var(--line); border-left: 0; }
   .meta-list { grid-template-columns: 1fr; gap: 12px; margin-top: 34px; }
   .site-footer { align-items: flex-start; flex-direction: column; }
