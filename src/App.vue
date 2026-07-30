@@ -302,7 +302,7 @@ onBeforeUnmount(() => {
             @click="handleRowToggle(work)"
           >
             <span class="work-number" aria-hidden="true">{{ String(work.index).padStart(2, '0') }}</span>
-            <img v-if="work.image" class="work-thumb" :src="work.image" :alt="`${work.title} 宣传图`" loading="lazy" />
+            <img v-if="work.image" class="work-thumb" :src="work.image" :alt="`${work.title} 宣传图`" />
             <span v-else class="work-thumb work-thumb--empty" aria-hidden="true"></span>
             <span class="work-meta">
               <span class="work-type">{{ typeLabel(work) }}</span>
