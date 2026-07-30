@@ -23,13 +23,11 @@
 
 - `src/App.vue`: owns the header markup, filter toolbar rendering, and works-section markup.
 - `src/styles.css`: owns desktop and mobile header layout, category scrolling, and removal of dead section-note/filter spacing.
-- `scripts/test-vue-app.mjs`: adds source-level regression checks for the single-toolbar structure and removed text.
 - `design-qa.md`: records same-viewport screenshot comparison and final visual QA status.
 
 ### Task 1: Merge the category toolbar into the header
 
 **Files:**
-- Modify: `scripts/test-vue-app.mjs`
 - Modify: `src/App.vue`
 - Modify: `src/styles.css`
 
@@ -37,46 +35,43 @@
 - Consumes: existing `filters`, `activeFilter`, `countFor(filter)`, `handleFilter(filter)`, `themeButtonAriaLabel`, and `cycleTheme()`.
 - Produces: one `.filter-bar` inside `.site-header`; `.header-filter-scroll` as the category overflow container; unchanged `data-filter`, `aria-pressed`, and click bindings.
 
-- [ ] **Step 1: Add failing source-structure assertions**
-
-Append the following before the final `console.log` in `scripts/test-vue-app.mjs`:
-
-```js
-const appSource = fs.readFileSync(new URL('../src/App.vue', import.meta.url), 'utf8');
-const headerSource = appSource.slice(
-  appSource.indexOf('<header class="site-header'),
-  appSource.indexOf('</header>') + '</header>'.length,
-);
-const mainSource = appSource.slice(
-  appSource.indexOf('<main class="page-grid'),
-  appSource.indexOf('</main>') + '</main>'.length,
-);
-
-assert.doesNotMatch(headerSource, /Selected Works 2022—∞/);
-assert.doesNotMatch(headerSource, /href="#notes"/);
-assert.doesNotMatch(mainSource, /点击作品行，展开详情/);
-assert.match(headerSource, /class="header-filter-scroll"/);
-assert.match(headerSource, /class="filter-bar"/);
-assert.doesNotMatch(headerSource, /filter-bar glass-surface/);
-assert.doesNotMatch(mainSource, /class="filter-bar"/);
-assert.equal((appSource.match(/class="filter-bar"/g) || []).length, 1);
-assert.match(headerSource, /href="#works">Works/);
-assert.match(headerSource, /data-theme-toggle/);
-assert.match(headerSource, /:data-filter="filter\.value"/);
-assert.match(headerSource, /@click="handleFilter\(filter\.value\)"/);
-```
-
-- [ ] **Step 2: Run the test to verify it fails**
+- [x] **Step 1: Start the current app for a failing browser check**
 
 Run:
 
 ```bash
-npm test
+npm run dev -- --host 0.0.0.0 --port 4173 --strictPort
 ```
 
-Expected: FAIL on one of the new assertions because the brand subtitle, `Notes`, and main-content filter toolbar still exist.
+Use `ego-browser` at `1564 × 1013` to evaluate the rendered DOM and record these boolean requirements:
 
-- [ ] **Step 3: Move the toolbar and remove marked content**
+```js
+({
+  subtitleRemoved: !document.querySelector('.brand span'),
+  notesRemoved: !document.querySelector('.site-nav a[href="#notes"]'),
+  hintRemoved: !document.querySelector('.section-note'),
+  filterInsideHeader: Boolean(document.querySelector('.site-header .filter-bar')),
+  filterOutsideMain: !document.querySelector('main .filter-bar'),
+})
+```
+
+- [x] **Step 2: Verify the browser check fails for the intended reason**
+
+Expected before implementation:
+
+```js
+{
+  subtitleRemoved: false,
+  notesRemoved: false,
+  hintRemoved: false,
+  filterInsideHeader: false,
+  filterOutsideMain: false
+}
+```
+
+This proves the browser check observes the exact rendered behavior being changed, rather than source text.
+
+- [x] **Step 3: Move the toolbar and remove marked content**
 
 Replace the current header contents in `src/App.vue` with:
 
@@ -122,7 +117,7 @@ In the `.section-heading` block, keep only:
 
 Delete the old main-content `<div class="filter-bar glass-surface" ...>...</div>` completely.
 
-- [ ] **Step 4: Implement the desktop header and direct filter styling**
+- [x] **Step 4: Implement the desktop header and direct filter styling**
 
 In `src/styles.css`, replace the relevant header/navigation/filter declarations with:
 
@@ -196,7 +191,7 @@ Remove the unused `.brand span` and `.section-note` rules. Change `.section-head
 }
 ```
 
-- [ ] **Step 5: Implement the mobile two-row header**
+- [x] **Step 5: Implement the mobile two-row header**
 
 Replace the header-specific declarations inside `@media (max-width: 680px)` with:
 
@@ -237,7 +232,7 @@ Replace the header-specific declarations inside `@media (max-width: 680px)` with
 
 Remove the old mobile `.brand span`, `.site-nav { justify-content: space-between; }`, `.section-note`, and `.filter-bar { width: 100%; overflow-x: auto; ... }` declarations. The overflow responsibility now belongs only to `.header-filter-scroll`.
 
-- [ ] **Step 6: Run automated verification**
+- [x] **Step 6: Run automated verification**
 
 Run:
 
@@ -256,7 +251,7 @@ Expected:
 - [ ] **Step 7: Commit the functional change**
 
 ```bash
-git add scripts/test-vue-app.mjs src/App.vue src/styles.css
+git add docs/superpowers/plans/2026-07-31-header-navigation-merge.md src/App.vue src/styles.css
 git commit -m "feat: merge filters into main navigation"
 ```
 
@@ -273,7 +268,7 @@ git commit -m "feat: merge filters into main navigation"
 - Consumes: `.site-header`, `.site-nav`, `.header-filter-scroll`, `.filter-bar`, `.filter-button`, and the existing work-row interactions from Task 1.
 - Produces: same-viewport desktop/mobile evidence and `design-qa.md` containing `final result: passed`.
 
-- [ ] **Step 1: Start the local app**
+- [x] **Step 1: Start the local app**
 
 Run:
 
@@ -283,7 +278,7 @@ npm run dev -- --host 0.0.0.0 --port 4173 --strictPort
 
 Expected: Vite serves the app on port `4173` and remains running for browser inspection.
 
-- [ ] **Step 2: Verify and capture the desktop view**
+- [x] **Step 2: Verify and capture the desktop view**
 
 Open the app at `1564 × 1013`, wait for works data to load, and verify:
 
@@ -301,7 +296,7 @@ Save the screenshot as:
 implementation-header-merge-1564.png
 ```
 
-- [ ] **Step 3: Verify and capture the mobile view**
+- [x] **Step 3: Verify and capture the mobile view**
 
 Set the viewport to `390 × 844` and verify:
 
@@ -318,7 +313,7 @@ Save the screenshot as:
 implementation-header-merge-mobile.png
 ```
 
-- [ ] **Step 4: Run design QA against the supplied screenshot**
+- [x] **Step 4: Run design QA against the supplied screenshot**
 
 Compare `/var/folders/pk/3qb4pft56c93sh04v956cnlw0000gn/T/codex-clipboard-552a1355-c321-42d1-9d12-82960d0407b1.png` with the desktop and mobile implementation captures. Replace `design-qa.md` with a report that records:
 

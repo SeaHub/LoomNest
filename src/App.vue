@@ -278,12 +278,25 @@ onBeforeUnmount(() => {
   <a class="skip-link" href="#works">跳到作品列表</a>
 
   <header class="site-header glass-surface" @pointermove="updateGlassPointer" @pointerleave="clearGlassPointer">
-    <a class="brand" href="./" aria-label="LoomNest 首页">
-      LoomNest <span>— Selected Works 2022—∞</span>
-    </a>
+    <a class="brand" href="./" aria-label="LoomNest 首页">LoomNest</a>
     <nav class="site-nav" aria-label="主导航">
+      <div class="header-filter-scroll">
+        <div class="filter-bar" role="toolbar" aria-label="作品分类筛选">
+          <button
+            v-for="filter in filters"
+            :key="filter.value"
+            class="filter-button"
+            :class="{ 'is-active': activeFilter === filter.value }"
+            type="button"
+            :data-filter="filter.value"
+            :aria-pressed="activeFilter === filter.value"
+            @click="handleFilter(filter.value)"
+          >
+            {{ filter.label }} <span>{{ countFor(filter.value) }}</span>
+          </button>
+        </div>
+      </div>
       <a class="is-current" href="#works">Works</a>
-      <a href="#notes">Notes</a>
     </nav>
     <button class="theme-toggle glass-control" type="button" data-theme-toggle :aria-label="themeButtonAriaLabel" @click="cycleTheme">
       <span class="theme-orb" aria-hidden="true"></span>
@@ -300,22 +313,6 @@ onBeforeUnmount(() => {
           <p class="eyebrow">ARCHIVE / 01—∞</p>
           <h2 id="works-heading">Selected Works</h2>
         </div>
-        <p class="section-note">点击作品行，展开详情</p>
-      </div>
-
-      <div class="filter-bar glass-surface" role="toolbar" aria-label="作品分类筛选" @pointermove="updateGlassPointer" @pointerleave="clearGlassPointer">
-        <button
-          v-for="filter in filters"
-          :key="filter.value"
-          class="filter-button"
-          :class="{ 'is-active': activeFilter === filter.value }"
-          type="button"
-          :data-filter="filter.value"
-          :aria-pressed="activeFilter === filter.value"
-          @click="handleFilter(filter.value)"
-        >
-          {{ filter.label }} <span>{{ countFor(filter.value) }}</span>
-        </button>
       </div>
 
       <div class="column-labels" aria-hidden="true">
