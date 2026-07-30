@@ -1,54 +1,64 @@
-# LoomNest Design QA
+# LoomNest Header Navigation Design QA
 
 ## Source visual truth
 
-- Source: `/Users/seahub/.codex/generated_images/019fb392-2515-7f33-9f54-a3408696501d/call_ajOxSfucFUnICSkwbKcOpf2C.png`
-- Source concept: option 3, “Living Index · 动态索引”
-- Source pixels: 1487 × 1058 PNG
+- Source: `/var/folders/pk/3qb4pft56c93sh04v956cnlw0000gn/T/codex-clipboard-552a1355-c321-42d1-9d12-82960d0407b1.png`
+- Source pixels: 1564 × 1013 PNG
+- Requested transformation: remove the three red-boxed items and move the blue-boxed category toolbar into the main header.
 
 ## Rendered implementation evidence
 
-- Full-view implementation: `implementation-selected-1440.png`
-- Mobile implementation: `implementation-mobile.png`
+- Desktop implementation: `implementation-header-merge-1564.png`
+- Mobile implementation: `implementation-header-merge-mobile.png`
 - Combined comparison: `design-qa-comparison.png`
-- CSS viewport: 1440 × 1024 for desktop comparison; 390 × 844 for mobile check
-- Rendered desktop pixels: 1425 × 1013 JPEG from the in-app browser capture (browser scrollbar excluded)
-- Density normalization: no scaling or resampling; source and implementation are shown together in the comparison page at the same CSS viewport state. The comparison page itself scales each image to fit the review canvas.
-- State: light theme, all works visible, mini-program row expanded; mobile state verified in light theme with all works visible.
+- Desktop CSS viewport and pixels: 1564 × 1013 at device scale factor 1
+- Mobile CSS viewport and pixels: 390 × 844 at device scale factor 1
+- Density normalization: none required; source and desktop implementation use identical pixel dimensions and density.
+- State: dark theme, `全部` selected, all five works visible, no work detail expanded.
+- Browser: ego-browser Chromium task space 15.
 
 ## Full-view comparison evidence
 
-`design-qa-comparison.png` places the source and implementation side by side. Both preserve the selected direction’s major hierarchy: compact identity header, left editorial introduction, right works index, compact filters, numbered rows, restrained dividers, and an inline expanded detail region. The implementation uses different demo copy and generated project imagery intentionally because the selected visual is a visual target, not a production content source.
+`design-qa-comparison.png` places the 1564 × 1013 source and implementation side by side at native dimensions. The implementation preserves the source page width, header frame, typography, glass treatment, title hierarchy, table structure, imagery, and dark-theme balance. It removes the marked brand subtitle, `Notes`, and section hint, then places the existing five category controls in the intended open header area.
+
+The works heading and table move upward by the exact vertical space formerly occupied by the hint and separate category toolbar. This is an intentional result of the approved merge rather than visual drift.
 
 ## Focused region comparison evidence
 
-The selected mini-program row was compared in the same expanded state. The implementation keeps the source’s selected-row emphasis, inline detail surface, two-column overview/access split, and QR affordance. The implementation adds accessible alt text and a real QR image linked to the demo destination. No focused region was required for icons because the prototype uses text actions and native controls rather than invented icon artwork.
+A separate crop was not needed because the only changed region is the full-width header, and both header versions remain readable at native 1564-pixel width in the combined image. The individual desktop implementation screenshot was also inspected at original resolution to verify filter text, counts, active treatment, `Works` underline, glass border, and theme-control alignment.
 
 ## Required fidelity surfaces
 
-- Fonts and typography: modern sans-serif display hierarchy plus monospace metadata; large Chinese headline, compact English labels, and row title scale match the reference’s editorial archive character.
-- Spacing and layout rhythm: fixed intro/works split on desktop, single-column stack below 900px, compact filter surface, row padding, and expanded-detail inset are aligned to the reference structure.
-- Colors and visual tokens: light fog-gray base, black text, orange action state, lavender selected state, and translucent glass surfaces are represented as CSS tokens. Dark theme uses the same hierarchy with deep blue-black surfaces.
-- Image quality and asset fidelity: all visible project imagery is raster artwork generated for the prototype or a real QR PNG; no placeholder boxes, inline SVGs, or handcrafted icon drawings are used.
-- Copy and content: demo copy is intentionally original and editable through `prototype/works.json`; type-specific labels are generated from the data contract.
+- Fonts and typography: existing sans-serif brand/display hierarchy and monospace metadata are unchanged. Filter labels retain their original sizes, counts, weights, and active orange accent.
+- Spacing and layout rhythm: category controls are centered in the elastic header region; `Works` remains right-aligned before the theme control. The main title now flows directly into the table without an abandoned filter gap.
+- Colors and visual tokens: existing dark background, translucent header, line colors, active glass pill, and orange focus/active tokens are preserved.
+- Image quality and asset fidelity: project preview images, crops, resolution, and row presentation are unchanged; no new placeholder, SVG, CSS-art, or generated asset was introduced.
+- Copy and content: the three requested items are absent; `Works`, all five category labels, counts, work titles, metadata, and footer copy remain.
 
-## Primary interaction checks
+## Responsive and interaction checks
 
-- Category filter updates counts and list contents without navigation.
-- Work row expands one detail at a time and closes with Escape.
-- Web row exposes a website link; mini-program row exposes QR image and alt text; mobile row exposes App Store and Google Play; future row exposes Coming Soon without an empty link.
-- Theme control cycles system → light → dark, persists the selection, and updates the resolved theme label.
-- Keyboard focus styles, semantic buttons, `aria-expanded`, `aria-controls`, `aria-pressed`, skip link, and reduced-motion media query are present.
-- Browser console warnings/errors: none observed.
+- Desktop at 1564 × 1013: filter center ratio is `0.465`; `Works` left ratio is `0.853`; header items do not overlap.
+- Intermediate width at 700 × 900: no viewport-level horizontal overflow; brand, filter scroller, `Works`, and theme control remain ordered without overlap; categories scroll inside their own region.
+- Mobile at 390 × 844: brand/theme occupy row one; `Works` and categories occupy row two; the category scroller is 254 px wide with 371 px of content; the page has no horizontal overflow.
+- Selecting `未来作品` updates `aria-pressed` to `true`, focuses and scrolls the selected button into view, and leaves only `Next Chapter` visible.
+- A work row expands with `aria-expanded="true"` and returns to `false` after Escape.
+- Theme cycling changes the resolved document theme from dark to light.
+- ego-browser event queue reported no console or page errors.
+
+## Findings
+
+- P0: none.
+- P1: none.
+- P2: none after the alignment correction described below.
 
 ## Comparison history
 
-1. Initial comparison found the implementation screenshot used the default viewport and did not share the source’s expanded-row state. The implementation was recaptured at 1440 × 1024 with the mini-program row expanded, and the comparison page was regenerated.
-2. The follow-up comparison found no actionable P0/P1/P2 visual or interaction differences. Remaining copy and project imagery differences are intentional demo content.
+1. The first desktop capture placed the category group and `Works` too close to the brand. Browser measurements reported a filter center ratio of `0.214` and a `Works` left ratio of `0.352`, producing a P2 mismatch with the requested center-header placement.
+2. The navigation layout changed from a left-packed flex row to a two-column grid. The revised browser measurements are `0.465` and `0.853`, and the recaptured native-size comparison shows the category group centered with `Works` restored to the right-side navigation position.
+3. The post-fix desktop, 700-pixel intermediate, and 390-pixel mobile checks found no remaining actionable P0/P1/P2 layout or interaction issues.
 
 ## Follow-up polish
 
-- P3: replace demo project artwork and links with the creator’s final assets and URLs when the JSON is populated.
-- P3: add a small theme icon from the eventual production icon set if one is selected later.
+- No P3 follow-up is required for the requested scope.
 
 final result: passed
