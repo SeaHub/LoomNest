@@ -3,8 +3,10 @@ import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import {
   filterWorks,
   getAccessKind,
+  getNextTheme,
   getWorksUrl,
   isSafeExternalUrl,
+  normalizeThemePreference,
   normalizeWorks,
   resolveTheme,
 } from './lib/works.js';
@@ -74,7 +76,7 @@ const isLoading = ref(true);
 const dataError = ref('');
 const activeFilter = ref('all');
 const openWorkId = ref(null);
-const themeMode = ref('system');
+const themeMode = ref(null);
 const systemDark = ref(false);
 const reducedMotion = ref(false);
 
@@ -84,19 +86,16 @@ let glassPointerUpdater;
 
 const visibleWorks = computed(() => filterWorks(works.value, activeFilter.value));
 const themeResolved = computed(() => resolveTheme(themeMode.value, systemDark.value));
-const themeNames = { system: '系统', light: '浅色', dark: '深色' };
-const nextThemeNames = { system: '浅色', light: '深色', dark: '跟随系统' };
-const themeButtonLabel = computed(() => themeMode.value === 'system'
-  ? `系统 · ${themeResolved.value === 'dark' ? '深色' : '浅色'}`
-  : themeNames[themeMode.value]);
-const themeButtonAriaLabel = computed(() => `当前主题：${themeNames[themeMode.value]}，点击切换到${nextThemeNames[themeMode.value]}`);
+const themeNames = { light: '浅色', dark: '深色' };
+const nextTheme = computed(() => getNextTheme(themeResolved.value));
+const themeButtonLabel = computed(() => `${themeNames[themeResolved.value]} · ${themeNames[nextTheme.value]}`);
+const themeButtonAriaLabel = computed(() => `当前主题：${themeNames[themeResolved.value]}，点击切换到${themeNames[nextTheme.value]}`);
 
 function readTheme() {
   try {
-    const saved = window.localStorage.getItem('loomnest-theme');
-    return ['system', 'light', 'dark'].includes(saved) ? saved : 'system';
+    return normalizeThemePreference(window.localStorage.getItem('loomnest-theme'));
   } catch {
-    return 'system';
+    return null;
   }
 }
 
@@ -115,9 +114,7 @@ function applyTheme() {
 }
 
 function cycleTheme() {
-  const modes = ['system', 'light', 'dark'];
-  const currentIndex = modes.indexOf(themeMode.value);
-  themeMode.value = modes[(currentIndex + 1) % modes.length];
+  themeMode.value = nextTheme.value;
   saveTheme(themeMode.value);
 }
 
@@ -247,7 +244,7 @@ function handleReducedMotionChange(event) {
   reducedMotion.value = event.matches;
 }
 
-watch([themeMode, systemDark], applyTheme);
+watch(themeResolved, applyTheme);
 
 onMounted(() => {
   glassPointerUpdater = createFrameThrottler(({ element, clientX, clientY }) => {
@@ -296,11 +293,10 @@ onBeforeUnmount(() => {
           </button>
         </div>
       </div>
-      <a class="is-current" href="#works">Works</a>
     </nav>
     <button class="theme-toggle glass-control" type="button" data-theme-toggle :aria-label="themeButtonAriaLabel" @click="cycleTheme">
       <span class="theme-orb" aria-hidden="true"></span>
-      {{ themeButtonLabel }} · {{ nextThemeNames[themeMode] }}
+      {{ themeButtonLabel }}
     </button>
   </header>
 
