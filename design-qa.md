@@ -1,64 +1,42 @@
-# LoomNest Header Navigation Design QA
+# LoomNest Header Filter Left Alignment Design QA
 
 ## Source visual truth
 
-- Source: `/var/folders/pk/3qb4pft56c93sh04v956cnlw0000gn/T/codex-clipboard-552a1355-c321-42d1-9d12-82960d0407b1.png`
-- Source pixels: 1564 × 1013 PNG
-- Requested transformation: remove the three red-boxed items and move the blue-boxed category toolbar into the main header.
+- Requested source: `/var/folders/pk/3qb4pft56c93sh04v956cnlw0000gn/T/codex-clipboard-275bdcd6-fa83-4022-b39e-0543085f93cd.png`
+- Source status: unavailable on disk during QA; `view_image` reported `No such file or directory`.
+- Intended change from the conversation image: move the category filters into the blue target after the brand and rename the main heading to `Works`.
 
 ## Rendered implementation evidence
 
-- Desktop implementation: `implementation-header-merge-1564.png`
-- Mobile implementation: `implementation-header-merge-mobile.png`
-- Combined comparison: `design-qa-comparison.png`
-- Desktop CSS viewport and pixels: 1564 × 1013 at device scale factor 1
-- Mobile CSS viewport and pixels: 390 × 844 at device scale factor 1
-- Density normalization: none required; source and desktop implementation use identical pixel dimensions and density.
-- State: dark theme, `全部` selected, all five works visible, no work detail expanded.
-- Browser: ego-browser Chromium task space 15.
-
-## Full-view comparison evidence
-
-`design-qa-comparison.png` places the 1564 × 1013 source and implementation side by side at native dimensions. The implementation preserves the source page width, header frame, typography, glass treatment, title hierarchy, table structure, imagery, and dark-theme balance. It removes the marked brand subtitle, `Notes`, and section hint, then places the existing five category controls in the intended open header area.
-
-The works heading and table move upward by the exact vertical space formerly occupied by the hint and separate category toolbar. This is an intentional result of the approved merge rather than visual drift.
-
-## Focused region comparison evidence
-
-A separate crop was not needed because the only changed region is the full-width header, and both header versions remain readable at native 1564-pixel width in the combined image. The individual desktop implementation screenshot was also inspected at original resolution to verify filter text, counts, active treatment, `Works` underline, glass border, and theme-control alignment.
-
-## Required fidelity surfaces
-
-- Fonts and typography: existing sans-serif brand/display hierarchy and monospace metadata are unchanged. Filter labels retain their original sizes, counts, weights, and active orange accent.
-- Spacing and layout rhythm: category controls are centered in the elastic header region; `Works` remains right-aligned before the theme control. The main title now flows directly into the table without an abandoned filter gap.
-- Colors and visual tokens: existing dark background, translucent header, line colors, active glass pill, and orange focus/active tokens are preserved.
-- Image quality and asset fidelity: project preview images, crops, resolution, and row presentation are unchanged; no new placeholder, SVG, CSS-art, or generated asset was introduced.
-- Copy and content: the three requested items are absent; `Works`, all five category labels, counts, work titles, metadata, and footer copy remain.
-
-## Responsive and interaction checks
-
-- Desktop at 1564 × 1013: filter center ratio is `0.465`; `Works` left ratio is `0.853`; header items do not overlap.
-- Intermediate width at 700 × 900: no viewport-level horizontal overflow; brand, filter scroller, `Works`, and theme control remain ordered without overlap; categories scroll inside their own region.
-- Mobile at 390 × 844: brand/theme occupy row one; `Works` and categories occupy row two; the category scroller is 254 px wide with 371 px of content; the page has no horizontal overflow.
-- Selecting `未来作品` updates `aria-pressed` to `true`, focuses and scrolls the selected button into view, and leaves only `Next Chapter` visible.
-- A work row expands with `aria-expanded="true"` and returns to `false` after Escape.
-- Theme cycling changes the resolved document theme from dark to light.
-- ego-browser event queue reported no console or page errors.
+- Local URL: `http://localhost:4173/`
+- Browser: ego-browser Chromium task space `loomnest header left align verification`
+- Desktop viewport: 1564 × 1013 CSS pixels at device scale factor 1
+- Rendered geometry: heading `Works`; eyebrow `ARCHIVE / 01—∞`; filter-to-brand gap 29 px; filter left ratio 0.092; `Works` navigation left ratio 0.86; no page-level horizontal overflow.
+- Intermediate viewport: 700 × 900; header items remain ordered without overlap, category scrolling remains available, and there is no page-level horizontal overflow.
+- Mobile viewport: 390 × 844; brand/theme remain on row one, `Works`/categories remain on row two, the category strip scrolls internally, and there is no page-level horizontal overflow.
+- Interaction evidence: `网站` selected and focused; only `Atlas 文化地图` and `Field Notes` rendered; a work expanded and Escape closed it; the theme mode label advanced from light to dark.
+- Mobile interaction evidence: focusing and selecting `未来作品` scrolled it fully into view and rendered only `Next Chapter`.
+- Image evidence: all five work images completed with non-zero natural widths.
+- Screenshot status: blocked. ego-browser `Page.captureScreenshot` timed out at both 1564 × 1013 and 1586 × 260, so no browser-rendered implementation screenshot was produced.
 
 ## Findings
 
-- P0: none.
-- P1: none.
-- P2: none after the alignment correction described below.
+- [P0] Comparison artifacts are unavailable
+  - Location: design QA evidence collection.
+  - Evidence: the supplied reference path expired, and ego-browser screenshot capture timed out repeatedly.
+  - Impact: the required same-viewport combined visual comparison cannot be created.
+  - Fix: reattach the source screenshot, then recapture the implementation after ego-browser screenshot capture is available.
+
+## Fidelity surfaces
+
+- Fonts and typography: heading copy and existing typography were verified through the rendered DOM, but visual comparison is blocked.
+- Spacing and layout rhythm: browser geometry confirms the requested 29 px brand-to-filter spacing, but screenshot comparison is blocked.
+- Colors and visual tokens: unchanged in source code; visual comparison is blocked.
+- Image quality and asset fidelity: all existing work assets loaded; visual comparison is blocked.
+- Copy and content: `Works` and `ARCHIVE / 01—∞` are present as requested.
 
 ## Comparison history
 
-1. The first desktop capture placed the category group and `Works` too close to the brand. Browser measurements reported a filter center ratio of `0.214` and a `Works` left ratio of `0.352`, producing a P2 mismatch with the requested center-header placement.
-2. The navigation layout changed from a left-packed flex row to a two-column grid. The revised browser measurements are `0.465` and `0.853`, and the recaptured native-size comparison shows the category group centered with `Works` restored to the right-side navigation position.
-3. The post-fix desktop, 700-pixel intermediate, and 390-pixel mobile checks found no remaining actionable P0/P1/P2 layout or interaction issues.
+- No valid comparison iteration could run because neither the source file nor a browser screenshot was available for a combined input.
 
-## Follow-up polish
-
-- No P3 follow-up is required for the requested scope.
-
-final result: passed
+final result: blocked
