@@ -311,7 +311,7 @@ onBeforeUnmount(() => {
       <div class="section-heading">
         <div>
           <p class="eyebrow">ARCHIVE / 01—∞</p>
-          <h2 id="works-heading">Selected Works</h2>
+          <h2 id="works-heading">Works</h2>
         </div>
       </div>
 
