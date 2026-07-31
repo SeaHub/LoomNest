@@ -4,8 +4,10 @@ import path from 'node:path';
 import {
   filterWorks,
   getAccessKind,
+  getNextTheme,
   getWorksUrl,
   isSafeExternalUrl,
+  normalizeThemePreference,
   normalizeWorks,
   resolveTheme,
 } from '../src/lib/works.js';
@@ -29,8 +31,17 @@ assert.deepEqual(sample[0].role, []);
 assert.equal(filterWorks(sample, 'mobile').length, 0);
 assert.equal(filterWorks(sample, 'mini-program').length, 1);
 assert.equal(getAccessKind(sample[2]), 'future');
-assert.equal(resolveTheme('system', true), 'dark');
+assert.equal(normalizeThemePreference('light'), 'light');
+assert.equal(normalizeThemePreference('dark'), 'dark');
+assert.equal(normalizeThemePreference('system'), null);
+assert.equal(normalizeThemePreference('unexpected'), null);
+assert.equal(normalizeThemePreference(null), null);
+assert.equal(resolveTheme(null, true), 'dark');
+assert.equal(resolveTheme(null, false), 'light');
 assert.equal(resolveTheme('light', true), 'light');
+assert.equal(resolveTheme('dark', false), 'dark');
+assert.equal(getNextTheme('dark'), 'light');
+assert.equal(getNextTheme('light'), 'dark');
 assert.equal(isSafeExternalUrl('https://example.com'), true);
 assert.equal(isSafeExternalUrl('javascript:alert(1)'), false);
 assert.equal(isSafeExternalUrl(''), false);

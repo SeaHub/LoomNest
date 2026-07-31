@@ -1,4 +1,8 @@
-const allowedThemes = new Set(['system', 'light', 'dark']);
+const explicitThemes = new Set(['light', 'dark']);
+
+export function normalizeThemePreference(value) {
+  return explicitThemes.has(value) ? value : null;
+}
 
 export function normalizeWorks(rawWorks) {
   if (!Array.isArray(rawWorks)) return [];
@@ -32,9 +36,12 @@ export function getAccessKind(work) {
   return 'web';
 }
 
-export function resolveTheme(mode, systemDark) {
-  const safeMode = allowedThemes.has(mode) ? mode : 'system';
-  return safeMode === 'system' ? (systemDark ? 'dark' : 'light') : safeMode;
+export function resolveTheme(preference, systemDark) {
+  return normalizeThemePreference(preference) ?? (systemDark ? 'dark' : 'light');
+}
+
+export function getNextTheme(theme) {
+  return theme === 'dark' ? 'light' : 'dark';
 }
 
 export function isSafeExternalUrl(value) {
