@@ -12,5 +12,33 @@
       "url": "https://beyond-go.vercel.app/"
     },
     "status": "live"
+  },
+  {
+    "id": "beyondvim",
+    "title": "BeyondVim",
+    "titleEn": "BeyondVim",
+    "type": "web",
+    "year": 2026,
+    "summary": "通过中文讲解、真实按键、自适应复习和代码挑战，在 30 天内理解 Vim 并形成肌肉记忆。",
+    "image": "./assets/beyondvim.jpg",
+    "role": ["产品设计", "全栈开发"],
+    "access": {
+      "url": "https://beyond-vim-cloudbase-d4g4m4dfb75a3e52d.webapps.tcloudbase.com/"
+    },
+    "status": "live"
+  },
+  {
+    "id": "beyondredis",
+    "title": "BeyondRedis",
+    "titleEn": "BeyondRedis",
+    "type": "web",
+    "year": 2026,
+    "summary": "每天 10 分钟，通过命令练习、Go 场景题和间隔复习掌握 Redis。",
+    "image": "./assets/beyondredis.jpg",
+    "role": ["产品设计", "全栈开发"],
+    "access": {
+      "url": "https://beyond-redis-cloudbase-d4g4m4dfb75a3e52d.webapps.tcloudbase.com/"
+    },
+    "status": "live"
   }
 ]
