@@ -32,45 +32,6 @@ const typeLabels = {
   future: 'FUTURE',
 };
 
-const fallbackWorks = [
-  {
-    id: 'fallback-web',
-    title: 'Atlas 文化地图',
-    titleEn: 'Atlas Culture Map',
-    type: 'web',
-    year: 2026,
-    summary: '把城市文化、展览与公共空间整理成一张可探索的地图。',
-    image: './assets/atlas-web.jpg',
-    role: ['信息架构', '交互设计'],
-    access: { url: 'https://example.com/atlas-culture' },
-    status: 'live',
-  },
-  {
-    id: 'fallback-mini',
-    title: '织境小屋',
-    titleEn: 'Weave House',
-    type: 'mini-program',
-    year: 2025,
-    summary: '一款收集灵感、整理日常小物与城市去处的小程序。',
-    image: './assets/weave-mini.jpg',
-    role: ['产品设计'],
-    access: { qrImage: './assets/weave-mini-qr.png', qrAlt: '织境小屋小程序二维码' },
-    status: 'live',
-  },
-  {
-    id: 'fallback-mobile',
-    title: 'Flow 日记',
-    titleEn: 'Flow Diary',
-    type: 'mobile',
-    year: 2026,
-    summary: '专注与记录的日常伴侣。',
-    image: './assets/flow-mobile.jpg',
-    role: ['产品设计', '开发'],
-    access: { appStore: 'https://apps.apple.com/', googlePlay: 'https://play.google.com/' },
-    status: 'live',
-  },
-];
-
 const works = ref([]);
 const isLoading = ref(true);
 const dataError = ref('');
@@ -228,8 +189,8 @@ async function loadWorks() {
     if (!loaded.length) throw new Error('作品配置为空');
     works.value = loaded;
   } catch (error) {
-    works.value = normalizeWorks(fallbackWorks);
-    dataError.value = '暂时使用示例数据：请检查 works.json 的格式或路径。';
+    works.value = [];
+    dataError.value = '作品数据加载失败，请稍后重试。';
     console.warn(error);
   } finally {
     isLoading.value = false;
