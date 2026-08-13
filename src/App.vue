@@ -182,7 +182,7 @@ async function loadWorks() {
   dataError.value = '';
 
   try {
-    const response = await fetch(getWorksUrl(import.meta.env.BASE_URL, Date.now()), { cache: 'no-store' });
+    const response = await fetch(getWorksUrl(import.meta.env.BASE_URL));
     if (!response.ok) throw new Error(`作品配置加载失败：${response.status}`);
 
     const loaded = normalizeWorks(await response.json());
@@ -285,7 +285,7 @@ onBeforeUnmount(() => {
       </div>
 
       <div v-else-if="visibleWorks.length" :key="activeFilter" class="works-list filter-swap" aria-live="polite">
-        <article v-for="work in visibleWorks" :key="work.id" class="work-entry" :class="{ 'is-open': isOpen(work) }">
+        <article v-for="(work, workIndex) in visibleWorks" :key="work.id" class="work-entry" :class="{ 'is-open': isOpen(work) }">
           <button
             class="work-row"
             type="button"
@@ -296,7 +296,17 @@ onBeforeUnmount(() => {
             @click="handleRowToggle(work)"
           >
             <span class="work-number" aria-hidden="true">{{ String(work.index).padStart(2, '0') }}</span>
-            <img v-if="work.image" class="work-thumb" :src="work.image" :alt="`${work.title} 宣传图`" />
+            <img
+              v-if="work.image"
+              class="work-thumb"
+              :src="work.image"
+              :alt="`${work.title} 宣传图`"
+              width="720"
+              height="405"
+              :loading="workIndex === 0 ? 'eager' : 'lazy'"
+              :fetchpriority="workIndex === 0 ? 'high' : 'low'"
+              decoding="async"
+            />
             <span v-else class="work-thumb work-thumb--empty" aria-hidden="true"></span>
             <span class="work-meta">
               <span class="work-type">{{ typeLabel(work) }}</span>
