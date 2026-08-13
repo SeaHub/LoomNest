@@ -221,7 +221,10 @@ button { font: inherit; }
   padding: 74px 0 84px;
 }
 
-.works-column { min-width: 0; }
+.works-column {
+  --work-grid-columns: 44px minmax(90px, 0.48fr) minmax(0, 1.2fr) minmax(54px, 0.3fr) minmax(66px, 0.32fr) 22px;
+  min-width: 0;
+}
 
 .eyebrow,
 .detail-label,
@@ -266,7 +269,7 @@ button { font: inherit; }
 
 .column-labels {
   display: grid;
-  grid-template-columns: 44px minmax(0, 1.4fr) minmax(110px, 0.7fr) minmax(76px, 0.4fr) 22px;
+  grid-template-columns: var(--work-grid-columns);
   gap: 18px;
   padding: 11px 16px;
   border-top: 1px solid var(--line-strong);
@@ -284,7 +287,7 @@ button { font: inherit; }
 
 .work-row {
   display: grid;
-  grid-template-columns: 44px minmax(90px, 0.48fr) minmax(0, 1.2fr) minmax(54px, 0.3fr) minmax(66px, 0.32fr) 22px;
+  grid-template-columns: var(--work-grid-columns);
   gap: 18px;
   align-items: center;
   width: 100%;
